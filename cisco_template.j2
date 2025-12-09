@@ -1,0 +1,15 @@
+! NTP Configuration
+!
+hostname {{ hostname }}
+!
+{% for ntp_server in ntp_servers %}
+ntp servers {{ ntp_server }}
+{% endfor %}
+!
+{% if device_type == 'router' %}
+ 
+ ntp source Loopback0
+!
+{% endif %}
+!
+end
