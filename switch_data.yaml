@@ -1,5 +1,5 @@
 hostname: Edge-Router-01
-device_type: swiche  # <-- این متغیر کلید ماست
+device_type: router   
 ntp_servers:
-  -  10.10.10.1
-  -  10.10.10.2
+  - 10.10.10.1
+  - 10.10.10.2
