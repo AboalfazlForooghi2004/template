@@ -2,12 +2,7 @@
 !
 hostname Edge-Router-01
 !
-
 ntp servers 10.10.10.1
-
 ntp servers 10.10.10.2
-
-!
-
 !
 end
