@@ -1,5 +1,52 @@
-hostname: Edge-Router-01
-device_type: router   
+hostname: sw-core1
 ntp_servers:
-  - 10.10.10.1
-  - 10.10.10.2
+  - 192.0.2.10
+  - 192.0.2.11
+  - 2001:db8::10
+device_type: switch          
+mgmt_vlan: 10
+domain_name: example.local
+admin_user: admin
+admin_pass: "C0mpl3xP@ss!"
+
+vlans:
+  - id: 10
+    name: mgmt
+  - id: 20
+    name: servers
+  - id: 30
+    name: users
+
+interfaces:
+  - name: GigabitEthernet1/0/1
+    desc: "Access - user workstation"
+    mode: access
+    vlan: 30
+  - name: GigabitEthernet1/0/2
+    desc: "Access - server01"
+    mode: access
+    vlan: 20
+  - name: GigabitEthernet1/0/24
+    desc: "Uplink to core/router"
+    mode: trunk
+    allowed_vlans: "10,20,30"
+
+svis:
+  - id: 10
+    ip: 192.168.10.2
+    mask: 255.255.255.0
+  - id: 30
+    ip: 192.168.30.1
+    mask: 255.255.255.0
+
+routing:
+  protocol: ospf
+  process_id: 1
+  router_id: 1.1.1.1
+  networks:
+    - ip: 192.168.10.0
+      wildcard: 0.0.0.255
+      area: 0
+    - ip: 192.168.30.0
+      wildcard: 0.0.0.255
+      area: 0

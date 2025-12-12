@@ -1,14 +1,93 @@
-! NTP Configuration
-!
+! ===============================
+! Basic Device Configuration
+! ===============================
 hostname {{ hostname }}
+no ip domain-lookup
+service timestamps debug datetime msec
+service timestamps log datetime msec
+logging buffered 16384
 !
+! ===============================
+! NTP Configuration
+! ===============================
+{% if ntp_servers %}
 {% for ntp_server in ntp_servers %}
 ntp server {{ ntp_server }}
 {% endfor %}
+{% endif %}
 !
 {% if device_type == 'router' %}
 ntp source Loopback0
+{% else %}
+ntp source Vlan{{ mgmt_vlan }}
+{% endif %}
 !
+! ===============================
+! Management Configuration
+! ===============================
+ip domain-name {{ domain_name }}
+!
+crypto key generate rsa modulus 2048
+!
+username {{ admin_user }} privilege 15 secret {{ admin_pass }}
+!
+line vty 0 4
+ login local
+ transport input ssh
+ exec-timeout 10 0
+!
+! ===============================
+! VLANs (only for switches)
+! ===============================
+{% if device_type == 'switch' %}
+{% for vlan in vlans %}
+vlan {{ vlan.id }}
+ name {{ vlan.name }}
+{% endfor %}
+!
+{% endif %}
+! ===============================
+! Interface Assignments
+! ===============================
+{% for iface in interfaces %}
+interface {{ iface.name }}
+ description {{ iface.desc }}
+{% if iface.mode == "access" %}
+ switchport mode access
+ switchport access vlan {{ iface.vlan }}
+ spanning-tree portfast
+{% elif iface.mode == "trunk" %}
+ switchport mode trunk
+ switchport trunk allowed vlan {{ iface.allowed_vlans }}
+{% endif %}
+ no shutdown
+!
+{% endfor %}
+! ===============================
+! SVI Interfaces (L3 Switch Only)
+! ===============================
+{% if device_type == 'switch' %}
+{% for svi in svis %}
+interface Vlan{{ svi.id }}
+ ip address {{ svi.ip }} {{ svi.mask }}
+ no shutdown
+{% endfor %}
+!
+ip routing
+{% endif %}
+! ===============================
+! Routing Configuration
+! ===============================
+{% if routing.protocol == "ospf" %}
+router ospf {{ routing.process_id }}
+ router-id {{ routing.router_id }}
+{% for net in routing.networks %}
+ network {{ net.ip }} {{ net.wildcard }} area {{ net.area }}
+{% endfor %}
+{% elif routing.protocol == "static" %}
+{% for route in routing.static_routes %}
+ip route {{ route.prefix }} {{ route.mask }} {{ route.next_hop }}
+{% endfor %}
 {% endif %}
 !
 end
