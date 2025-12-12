@@ -1,39 +1,38 @@
-! ===============================
+===============================
 ! Basic Device Configuration
-! ===============================
+===============================
 hostname sw-core1
 no ip domain-lookup
 service timestamps debug datetime msec
 service timestamps log datetime msec
 logging buffered 16384
 !
-! ===============================
+===============================
 ! NTP Configuration
-! ===============================
+===============================
 ntp server 192.0.2.10
 ntp server 192.0.2.11
 ntp server 2001:db8::10
-
+!
 ntp source Vlan10
 !
-! ===============================
+===============================
 ! Management Configuration
-! ===============================
+===============================
 ip domain-name example.local
-
+!
 crypto key generate rsa modulus 2048
-
+!
 username admin privilege 15 secret C0mpl3xP@ss!
-
+!
 line vty 0 4
  login local
  transport input ssh
  exec-timeout 10 0
 !
-
-! ===============================
+===============================
 ! VLANs (only for switches)
-! ===============================
+===============================
 vlan 10
  name mgmt
 vlan 20
@@ -41,10 +40,9 @@ vlan 20
 vlan 30
  name users
 !
-
-! ===============================
+===============================
 ! Interface Assignments
-! ===============================
+===============================
 interface GigabitEthernet1/0/1
  description Access - user workstation
  switchport mode access
@@ -65,10 +63,9 @@ interface GigabitEthernet1/0/24
  switchport trunk allowed vlan 10,20,30
  no shutdown
 !
-
-! ===============================
+===============================
 ! SVI Interfaces (L3 Switch Only)
-! ===============================
+===============================
 interface Vlan10
  ip address 192.168.10.2 255.255.255.0
  no shutdown
@@ -77,10 +74,9 @@ interface Vlan30
  no shutdown
 !
 ip routing
-
-! ===============================
-! Routing Configuration
-! ===============================
+===============================
+ Routing Configuration
+===============================
 router ospf 1
  router-id 1.1.1.1
  network 192.168.10.0 0.0.0.255 area 0

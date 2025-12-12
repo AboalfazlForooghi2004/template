@@ -1,15 +1,15 @@
-! ===============================
+===============================
 ! Basic Device Configuration
-! ===============================
+===============================
 hostname {{ hostname }}
 no ip domain-lookup
 service timestamps debug datetime msec
 service timestamps log datetime msec
 logging buffered 16384
 !
-! ===============================
+===============================
 ! NTP Configuration
-! ===============================
+===============================
 {% if ntp_servers %}
 {% for ntp_server in ntp_servers %}
 ntp server {{ ntp_server }}
@@ -22,9 +22,9 @@ ntp source Loopback0
 ntp source Vlan{{ mgmt_vlan }}
 {% endif %}
 !
-! ===============================
+===============================
 ! Management Configuration
-! ===============================
+===============================
 ip domain-name {{ domain_name }}
 !
 crypto key generate rsa modulus 2048
@@ -36,9 +36,9 @@ line vty 0 4
  transport input ssh
  exec-timeout 10 0
 !
-! ===============================
+===============================
 ! VLANs (only for switches)
-! ===============================
+===============================
 {% if device_type == 'switch' %}
 {% for vlan in vlans %}
 vlan {{ vlan.id }}
@@ -46,9 +46,9 @@ vlan {{ vlan.id }}
 {% endfor %}
 !
 {% endif %}
-! ===============================
+===============================
 ! Interface Assignments
-! ===============================
+===============================
 {% for iface in interfaces %}
 interface {{ iface.name }}
  description {{ iface.desc }}
@@ -63,9 +63,9 @@ interface {{ iface.name }}
  no shutdown
 !
 {% endfor %}
-! ===============================
+===============================
 ! SVI Interfaces (L3 Switch Only)
-! ===============================
+===============================
 {% if device_type == 'switch' %}
 {% for svi in svis %}
 interface Vlan{{ svi.id }}
@@ -75,9 +75,9 @@ interface Vlan{{ svi.id }}
 !
 ip routing
 {% endif %}
-! ===============================
-! Routing Configuration
-! ===============================
+===============================
+ Routing Configuration
+===============================
 {% if routing.protocol == "ospf" %}
 router ospf {{ routing.process_id }}
  router-id {{ routing.router_id }}
